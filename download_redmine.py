@@ -1,21 +1,9 @@
 #!/usr/bin/env python3
 
-#
-#   Redmine API information
-#
-REDMINE_SERVER = ''
-REDMINE_PROJECT_ID = '' # Found in project url: http://redmine.my-org.edu/projects/PROJ_ID
 
-# See http://www.redmine.org/projects/redmine/wiki/Rest_api#Authentication
-# "You can find your API key on your account page..."
-REDMINE_API_KEY = ''
-
-##########################################################################
-##########################################################################
-##########################################################################
-
-import json
+from config import *
 from urllib.parse import urljoin
+import json
 import requests
 
 
@@ -88,5 +76,5 @@ for i in range(1,max_id+1):
 
         open('issues/{0}.json'.format(issue['id']), 'w').write(json.dumps(issue))
     else:
-        print('    Issue {0} not found. Creating dummy issue to keep GitHub issue ID synchronized.'.format(i))
+        print('    Issue {0} not found. Creating dummy issue to keep Redmine and GitHub issue IDs synchronized.'.format(i))
         open('issues/{0}.json'.format(i), 'w').write(dummy_issue)

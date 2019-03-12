@@ -1,26 +1,14 @@
 #!/usr/bin/env python3
 
-import sys
-import requests
+
 import json
-import time
 import os
+import requests
+import sys
+import time
 
-# The GitHub repository to add this issue to
-REPO_OWNER = ""
-REPO_NAME = ''
+from config import *
 
-
-# Maps Github user names to their Github access tokens
-tokenmap = {
-  "pplimport" :      "",
-}
-
-
-# Maps Redmine user names to Github user names
-usermap = {
-  "pplimport" :       "pplimport",
-}
 
 def get_translate_dict():
     d = {}
@@ -50,7 +38,7 @@ def get_milestones(user):
 
     url = 'https://api.github.com/repos/%s/%s/milestones' % (REPO_OWNER, REPO_NAME)
     headers = {
-    "Authorization": "token %s" % tokenmap[user]
+    "Authorization": "token %s" % gihub_tokenmap[user]
     }
 
     response = requests.request("GET", url, headers=headers)
@@ -73,14 +61,14 @@ def create_milestone(user, title):
     url = 'https://api.github.com/repos/%s/%s/milestones' % (REPO_OWNER, REPO_NAME)
 
     headers = {
-    "Authorization": "token %s" % tokenmap[user]
+    "Authorization": "token %s" % gihub_tokenmap[user]
     }
 
     data = {"title": title}
 
     payload = json.dumps(data)
 
-    time.sleep(2)
+    time.sleep(12)
     response = requests.request("POST", url, data=payload, headers=headers)
 
     j = json.loads(response.content)
@@ -99,15 +87,15 @@ def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, m
     if body == None:
         body = ""
 
-    if realuser not in tokenmap:
+    if realuser not in gihub_tokenmap:
         realuser = "pplimport"
         body = "*Original author: " + user + "*\n\n---\n" + body
 
-    if assignee not in tokenmap:
+    if assignee not in gihub_tokenmap:
         assignee = "pplimport"
 
     headers = {
-    "Authorization": "token %s" % tokenmap[realuser],
+    "Authorization": "token %s" % gihub_tokenmap[realuser],
     "Accept": "application/vnd.github.golden-comet-preview+json"
     }
 
@@ -128,7 +116,9 @@ def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, m
     payload = json.dumps(data)
 
     # Add the issue to the repository
-    time.sleep(1)
+
+    # GitHub has a limit of 300 requests/per hour
+    time.sleep(12)
     response = requests.request("POST", url, data=payload, headers=headers)
     if response.status_code != 202:
         print('Could not create issue "%s"' % title)
@@ -164,12 +154,12 @@ def make_comment(user, issuenr, body, ctime):
 
     realuser = user
 
-    if realuser not in tokenmap:
+    if realuser not in gihub_tokenmap:
         realuser = "pplimport"
         body = "*Original author: " + user + "*\n" + body
 
     headers = {
-    "Authorization": "token %s" % tokenmap[realuser]
+    "Authorization": "token %s" % gihub_tokenmap[realuser]
     }
 
 
@@ -196,7 +186,7 @@ def create_issue_from_redmine_file(filename):
     with open(filename) as infile:
         indata = json.load(infile)
 
-    author = usermap[indata["author"]["name"]]
+    author = github_usermap[indata["author"]["name"]]
 
     title = indata["subject"]
     body = translate_for_github(indata["description"])
@@ -204,7 +194,7 @@ def create_issue_from_redmine_file(filename):
     updated_at = indata["updated_on"]
 
     if "assigned_to" in indata:
-        assignee = usermap[indata["assigned_to"]["name"]]
+        assignee = github_usermap[indata["assigned_to"]["name"]]
     else:
         assignee = None
 
@@ -238,7 +228,7 @@ def create_issue_from_redmine_file(filename):
 
     # Add comments
     for j in indata["journals"]:
-        author = usermap[j["user"]["name"]]
+        author = github_usermap[j["user"]["name"]]
 
         body = None
 
