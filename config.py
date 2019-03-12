@@ -27,6 +27,9 @@ REDMINE_API_KEY = 'redmine_api_key'
 GITHUB_REPO_OWNER = 'github_repo_owner_name'
 GITHUB_REPO_NAME  = 'github_repo_name'
 
+# Issues and comments will be assigned to this GitHub user if the real user is not
+# in the map below
+github_default_username = 'github_default_username'
 
 # Maps Github user names to their Github access tokens:
 github_tokenmap = {

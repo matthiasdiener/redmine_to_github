@@ -88,11 +88,11 @@ def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, m
         body = ""
 
     if realuser not in gihub_tokenmap:
-        realuser = "pplimport"
+        realuser = github_default_username
         body = "*Original author: " + user + "*\n\n---\n" + body
 
     if assignee not in gihub_tokenmap:
-        assignee = "pplimport"
+        assignee = github_default_username
 
     headers = {
     "Authorization": "token %s" % gihub_tokenmap[realuser],
@@ -155,7 +155,7 @@ def make_comment(user, issuenr, body, ctime):
     realuser = user
 
     if realuser not in gihub_tokenmap:
-        realuser = "pplimport"
+        realuser = github_default_username
         body = "*Original author: " + user + "*\n" + body
 
     headers = {
