@@ -36,7 +36,7 @@ def get_milestones(user):
     if milestones:
         return 
 
-    url = 'https://api.github.com/repos/%s/%s/milestones' % (REPO_OWNER, REPO_NAME)
+    url = 'https://api.github.com/repos/%s/%s/milestones' % (GITHUB_REPO_OWNER, GITHUB_REPO_NAME)
     headers = {
     "Authorization": "token %s" % gihub_tokenmap[user]
     }
@@ -58,7 +58,7 @@ def create_milestone(user, title):
     if title in milestones:
         return milestones[title]
 
-    url = 'https://api.github.com/repos/%s/%s/milestones' % (REPO_OWNER, REPO_NAME)
+    url = 'https://api.github.com/repos/%s/%s/milestones' % (GITHUB_REPO_OWNER, GITHUB_REPO_NAME)
 
     headers = {
     "Authorization": "token %s" % gihub_tokenmap[user]
@@ -99,7 +99,7 @@ def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, m
     "Accept": "application/vnd.github.golden-comet-preview+json"
     }
 
-    url = 'https://api.github.com/repos/%s/%s/import/issues' % (REPO_OWNER, REPO_NAME)
+    url = 'https://api.github.com/repos/%s/%s/import/issues' % (GITHUB_REPO_OWNER, GITHUB_REPO_NAME)
 
     data = {'issue': {'title': title,
                       'body': body,
@@ -163,7 +163,7 @@ def make_comment(user, issuenr, body, ctime):
     }
 
 
-    url = 'https://api.github.com/repos/%s/%s/issues/%s/comments' % (REPO_OWNER, REPO_NAME, issuenr)
+    url = 'https://api.github.com/repos/%s/%s/issues/%s/comments' % (GITHUB_REPO_OWNER, GITHUB_REPO_NAME, issuenr)
 
     data = {'body' : body}
 
