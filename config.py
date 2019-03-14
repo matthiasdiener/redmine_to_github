@@ -31,11 +31,12 @@ GITHUB_REPO_NAME  = 'github_repo_name'
 # in the map below
 github_default_username = 'github_default_username'
 
-# Maps Github user names to their Github access tokens:
+# Maps Github user names to their Github access tokens. The tokens can be
+# generated in Settings -> Developer Settings -> Personal access tokens,
+# Generate new token. Only the public_repo scope is necessary.
 github_tokenmap = {
     'github_username':                      'access token',
 }
-
 
 # Maps Redmine user names to Github user names:
 github_usermap = {
