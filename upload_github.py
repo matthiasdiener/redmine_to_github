@@ -38,7 +38,7 @@ def get_milestones(user):
 
     url = 'https://api.github.com/repos/%s/%s/milestones' % (GITHUB_REPO_OWNER, GITHUB_REPO_NAME)
     headers = {
-    "Authorization": "token %s" % gihub_tokenmap[user]
+    "Authorization": "token %s" % github_tokenmap[user]
     }
 
     response = requests.request("GET", url, headers=headers)
@@ -61,14 +61,14 @@ def create_milestone(user, title):
     url = 'https://api.github.com/repos/%s/%s/milestones' % (GITHUB_REPO_OWNER, GITHUB_REPO_NAME)
 
     headers = {
-    "Authorization": "token %s" % gihub_tokenmap[user]
+    "Authorization": "token %s" % github_tokenmap[user]
     }
 
     data = {"title": title}
 
     payload = json.dumps(data)
 
-    time.sleep(12)
+    time.sleep(2)
     response = requests.request("POST", url, data=payload, headers=headers)
 
     j = json.loads(response.content)
@@ -85,17 +85,17 @@ def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, m
     realuser = user
 
     if body == None:
-        body = ""
+        body = "No body."
 
-    if realuser not in gihub_tokenmap:
+    if realuser not in github_tokenmap:
         realuser = github_default_username
         body = "*Original author: " + user + "*\n\n---\n" + body
 
-    if assignee not in gihub_tokenmap:
+    if assignee not in github_tokenmap:
         assignee = github_default_username
 
     headers = {
-    "Authorization": "token %s" % gihub_tokenmap[realuser],
+    "Authorization": "token %s" % github_tokenmap[realuser],
     "Accept": "application/vnd.github.golden-comet-preview+json"
     }
 
@@ -118,7 +118,7 @@ def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, m
     # Add the issue to the repository
 
     # GitHub has a limit of 300 requests/per hour
-    time.sleep(12)
+    time.sleep(2)
     response = requests.request("POST", url, data=payload, headers=headers)
     if response.status_code != 202:
         print('Could not create issue "%s"' % title)
@@ -150,16 +150,17 @@ def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, m
 
 def make_comment(user, issuenr, body, ctime):
 
+    orig_body = body
     body = "*Original date: " + ctime + "*\n\n---\n" + body
 
     realuser = user
 
-    if realuser not in gihub_tokenmap:
+    if realuser not in github_tokenmap:
         realuser = github_default_username
         body = "*Original author: " + user + "*\n" + body
 
     headers = {
-    "Authorization": "token %s" % gihub_tokenmap[realuser]
+        "Authorization": "token %s" % github_tokenmap[realuser]
     }
 
 
@@ -172,12 +173,24 @@ def make_comment(user, issuenr, body, ctime):
     time.sleep(2)
     response = requests.request("POST", url, data=payload, headers=headers)
 
-    print(response.headers["X-RateLimit-Remaining"])
-
     if response.status_code != 201:
         print('Could not create comment: "%s"' % body)
         print('Response:', response.content)
         sys.exit(1)
+    else:
+        if "X-RateLimit-Remaining" in response.headers: 
+            print('  Created comment: {0} [...] ({1})'.format(orig_body.split('\n')[0], response.headers["X-RateLimit-Remaining"]))
+        else:
+            print('  Created comment: {0} [...] ({1})'.format(orig_body.split('\n')[0]), "unknown")
+
+
+
+def get_github_username(redmine_user):
+    if redmine_user in github_usermap:
+        return(github_usermap[redmine_user])
+    else:
+        # print('  Redmine user "{0}" not in github_usermap, using default github author "{1}".'.format(redmine_user, github_default_username))
+        return(github_default_username)
 
 
 
@@ -186,7 +199,12 @@ def create_issue_from_redmine_file(filename):
     with open(filename) as infile:
         indata = json.load(infile)
 
-    author = github_usermap[indata["author"]["name"]]
+    redmine_user = indata["author"]["name"]
+
+    github_author = get_github_username(redmine_user)
+
+    filename_issue_num = int(os.path.basename(filename).split('.')[0])
+
 
     title = indata["subject"]
     body = translate_for_github(indata["description"])
@@ -194,7 +212,7 @@ def create_issue_from_redmine_file(filename):
     updated_at = indata["updated_on"]
 
     if "assigned_to" in indata:
-        assignee = github_usermap[indata["assigned_to"]["name"]]
+        assignee = get_github_username(indata["assigned_to"]["name"])
     else:
         assignee = None
 
@@ -220,15 +238,14 @@ def create_issue_from_redmine_file(filename):
 
 
     # Create issue
-    num_issue = make_issue(author, title, body, created_at, closed_at, updated_at, assignee, milestone, closed, labels)
+    github_issue_num = make_issue(github_author, title, body, created_at, closed_at, updated_at, assignee, milestone, closed, labels)
 
-    # num_issue = int(os.path.basename(filename)[:-5])
-    print(num_issue)
-    # sys.exit(0)
+    if github_issue_num != filename_issue_num:
+        print('  Warning: GitHub issue number ({0}) does not match Redmine issue number ({1})!'.format(github_issue_num, filename_issue_num))
 
     # Add comments
     for j in indata["journals"]:
-        author = github_usermap[j["user"]["name"]]
+        github_author = get_github_username(j["user"]["name"])
 
         body = None
 
@@ -241,7 +258,7 @@ def create_issue_from_redmine_file(filename):
 
         if body == "" or body == None: continue
 
-        make_comment(author, num_issue, body, created_at)
+        make_comment(github_author, github_issue_num, body, created_at)
 
 
 for f in sys.argv[1:]:

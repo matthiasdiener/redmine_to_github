@@ -19,20 +19,22 @@ data = r.json()
 issue_count = data['total_count']
 max_id = data['issues'][0]['id']
 
+pad_len = len(str(max_id))
+
 project_id = data['issues'][0]['project']['id']
 
 
-def create_dummy_issue(id):
+def create_dummy_issue(i):
     dummy_issue = '''
-    {
-        "status": {
-            "id": 1,
+    {{
+        "status": {{
+            "id": {0},
             "name": "Closed"
-        },
-        "project": {
+        }},
+        "project": {{
             "id": 1,
-            "name": "Charm++"
-        },
+            "name": "{1}"
+        }},
         "attachments": null,
         "time_entries": null,
         "spent_hours": 0.0,
@@ -42,31 +44,31 @@ def create_dummy_issue(id):
         "subject": "Dummy issue",
         "changesets": null,
         "watchers": [],
-        "author": {
+        "author": {{
             "id": 60,
-            "name": "pplimport"
-        },
+            "name": "{2}"
+        }},
         "created_on": "2010-05-23T19:25:24Z",
         "relations": null,
         "id": 77,
-        "priority": {
+        "priority": {{
             "id": 2,
             "name": "Normal"
-        },
-        "tracker": {
+        }},
+        "tracker": {{
             "id": 4,
             "name": "Cleanup"
-        },
+        }},
         "updated_on": "2010-05-23T19:25:24Z",
         "total_spent_hours": 0.0,
         "start_date": "2010-05-23",
         "closed_on": "2010-05-23T19:25:24Z",
         "done_ratio": 0
-    }
-    '''
+    }}
+    '''.format(i, REDMINE_PROJECT_ID, github_default_username)
 
-    print('  Issue {0} not found in project. Creating dummy issue to keep Redmine and GitHub issue IDs synchronized.'.format(id))
-    open('issues/{0}.json'.format(id), 'w').write(dummy_issue)
+    print('  Issue {0} not found in project. Creating dummy issue to keep Redmine and GitHub issue IDs synchronized.'.format(i))
+    open('issues/{0}.json'.format(str(i).zfill(pad_len)), 'w').write(dummy_issue)
 
 
 
@@ -86,7 +88,7 @@ for i in range(1,max_id+1):
     if data['issue']['project']['id'] == project_id:
         issue = data['issue']
         print(issue['id'], issue['subject'])
-        open('issues/{0}.json'.format(issue['id']), 'w').write(json.dumps(issue))
+        open('issues/{0}.json'.format(str(issue['id']).zfill(pad_len)), 'w').write(json.dumps(issue))
     else:
         create_dummy_issue(i)
 
