@@ -24,8 +24,7 @@ REDMINE_API_KEY = 'redmine_api_key'
 #
 
 # The GitHub repository to add this issue to:
-GITHUB_REPO_OWNER = 'github_repo_owner_name'
-GITHUB_REPO_NAME  = 'github_repo_name'
+GITHUB_REPO = 'owner/repository'
 
 # Issues and comments will be assigned to this GitHub user if the real user is not
 # in the map below

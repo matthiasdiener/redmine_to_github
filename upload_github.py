@@ -36,9 +36,9 @@ def get_milestones(user):
     if milestones:
         return 
 
-    url = 'https://api.github.com/repos/%s/%s/milestones' % (GITHUB_REPO_OWNER, GITHUB_REPO_NAME)
+    url = 'https://api.github.com/repos/{0}/milestones'.format(GITHUB_REPO)
     headers = {
-    "Authorization": "token %s" % github_tokenmap[user]
+    "Authorization": "token {0}".format(github_tokenmap[user])
     }
 
     response = requests.request("GET", url, headers=headers)
@@ -58,10 +58,10 @@ def create_milestone(user, title):
     if title in milestones:
         return milestones[title]
 
-    url = 'https://api.github.com/repos/%s/%s/milestones' % (GITHUB_REPO_OWNER, GITHUB_REPO_NAME)
+    url = 'https://api.github.com/repos/{0}/milestones'.format(GITHUB_REPO)
 
     headers = {
-    "Authorization": "token %s" % github_tokenmap[user]
+    "Authorization": "token {0}".format(github_tokenmap[user])
     }
 
     data = {"title": title}
@@ -95,11 +95,11 @@ def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, m
         assignee = github_default_username
 
     headers = {
-    "Authorization": "token %s" % github_tokenmap[realuser],
+    "Authorization": "token {0}".format(github_tokenmap[realuser])
     "Accept": "application/vnd.github.golden-comet-preview+json"
     }
 
-    url = 'https://api.github.com/repos/%s/%s/import/issues' % (GITHUB_REPO_OWNER, GITHUB_REPO_NAME)
+    url = 'https://api.github.com/repos/{0}/import/issues'.format(GITHUB_REPO)
 
     data = {'issue': {'title': title,
                       'body': body,
@@ -121,7 +121,7 @@ def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, m
     time.sleep(2)
     response = requests.request("POST", url, data=payload, headers=headers)
     if response.status_code != 202:
-        print('Could not create issue "%s"' % title)
+        print('Could not create issue "{0}"'.format(title))
         print('Response:', response.content)
         sys.exit(1)
 
@@ -160,11 +160,11 @@ def make_comment(user, issuenr, body, ctime):
         body = "*Original author: " + user + "*\n" + body
 
     headers = {
-        "Authorization": "token %s" % github_tokenmap[realuser]
+        "Authorization": "token {0}".format(github_tokenmap[realuser])
     }
 
 
-    url = 'https://api.github.com/repos/%s/%s/issues/%s/comments' % (GITHUB_REPO_OWNER, GITHUB_REPO_NAME, issuenr)
+    url = 'https://api.github.com/repos/{0}/issues/{1}/comments'.format(GITHUB_REPO, issuenr)
 
     data = {'body' : body}
 
@@ -174,7 +174,7 @@ def make_comment(user, issuenr, body, ctime):
     response = requests.request("POST", url, data=payload, headers=headers)
 
     if response.status_code != 201:
-        print('Could not create comment: "%s"' % body)
+        print('Could not create comment: "{0}"'.format(body))
         print('Response:', response.content)
         sys.exit(1)
     else:
