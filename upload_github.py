@@ -126,7 +126,7 @@ def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, m
                 issue_url = r["issue_url"]
                 num = int(issue_url[issue_url.rfind("/")+1:])
                 real_url = issue_url.replace("api.github.com/repos/", "github.com/")
-                print('Created issue #{0} "{1}" {2}'.format(num, title[:50], real_url))
+                print('Issue #{0} "{1}" {2}'.format(num, title[:40], real_url))
                 break
 
             if status == "failed":
@@ -163,9 +163,9 @@ def make_comment(user, issuenr, body, ctime):
         sys.exit(1)
     else:
         if "X-RateLimit-Remaining" in response.headers: 
-            print('  Created comment: "{0}" ({1})'.format(orig_body.split('\n')[0][:50], response.headers["X-RateLimit-Remaining"]))
+            print('  Comment: "{0}" ({1})'.format(orig_body.split('\n')[0][:50], response.headers["X-RateLimit-Remaining"]))
         else:
-            print('  Created comment: "{0}"'.format(orig_body.split('\n')[0][:50]))
+            print('  Comment: "{0}"'.format(orig_body.split('\n')[0][:50]))
 
 
 def redmine_user_has_token(redmine_user):
@@ -263,6 +263,8 @@ def create_issue_from_redmine_file(filename):
         make_comment(author, github_issue_num, body, created_at)
 
 
+
+
 files = sys.argv[1:]
 
 print('='*80)
@@ -272,3 +274,14 @@ print('='*80)
 
 for f in files:
     create_issue_from_redmine_file(f)
+
+print('='* 80)
+print('Finished.')
+
+if len(unknown_github_username) > 0:
+    print('The following Redmine users did not have a GitHub username associated with them:')
+    print(unknown_github_username)
+
+if len(unknown_github_token) > 0:
+    print('The following GitHub users did not have a GitHub token associated with them:')
+    print(unknown_github_token)
