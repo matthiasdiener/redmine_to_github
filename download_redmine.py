@@ -5,6 +5,10 @@ from config import *
 from urllib.parse import urljoin
 import json
 import requests
+import os
+
+# all issues are stored here
+os.mkdir('issues')
 
 
 issue_query_str = 'issues.json?project_id={0}&limit=1&status_id=*'.format(REDMINE_PROJECT_ID)
