@@ -175,12 +175,16 @@ def redmine_user_has_token(redmine_user):
             return True
     return False
 
+unknown_github_username = set()
+unknown_github_token = set()
 
 def get_github_username(redmine_user):
     if redmine_user in github_usermap:
         return(github_usermap[redmine_user])
     else:
-        print('  Redmine user "{0}" not in github_usermap, using default GitHub user "{1}".'.format(redmine_user, github_default_username))
+        if redmine_user not in unknown_github_username:
+            print('  Redmine user "{0}" not in github_usermap, using default GitHub user "{1}".'.format(redmine_user, github_default_username))
+            unknown_github_username.add(redmine_user)
         return(github_default_username)
 
 
@@ -188,7 +192,9 @@ def get_github_token(github_user):
     if github_user in github_tokenmap:
         return(github_tokenmap[github_user])
     else:
-        print('  GitHub user "{0}" not in github_tokenmap, using token for default GitHub user "{1}".'.format(github_user, github_default_username))
+        if github_user not in unknown_github_token:
+            print('  GitHub user "{0}" not in github_tokenmap, using token for default GitHub user "{1}".'.format(github_user, github_default_username))
+            unknown_github_token.add(github_user)
         return(github_tokenmap[github_default_username])
 
 
