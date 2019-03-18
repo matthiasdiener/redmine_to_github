@@ -86,7 +86,8 @@ for i in range(1,max_id+1):
     try:
         data = r.json()
     except:
-        create_dummy_issue(i)
+        if REDMINE_CREATE_DUMMY_ISSUE:
+            create_dummy_issue(i)
         continue
 
     if data['issue']['project']['id'] == project_id:
@@ -94,6 +95,7 @@ for i in range(1,max_id+1):
         print(issue['id'], issue['subject'])
         open('issues/{0}.json'.format(str(issue['id']).zfill(pad_len)), 'w').write(json.dumps(issue))
     else:
-        create_dummy_issue(i)
+        if REDMINE_CREATE_DUMMY_ISSUE:
+            create_dummy_issue(i)
 
 print('Finished downloading {0} issues.'.format(issue_count))

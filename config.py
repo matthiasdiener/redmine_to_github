@@ -17,6 +17,9 @@ REDMINE_PROJECT_ID = 'project_id'
 # You can find your API key on your account page.
 REDMINE_API_KEY = 'redmine_api_key'
 
+# Create dummy Redmine issues to keep Redmine and GitHub issue numbers synchronized? 
+REDMINE_CREATE_DUMMY_ISSUE=True
+
 ##########################################################
 
 #
