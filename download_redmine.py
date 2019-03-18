@@ -8,7 +8,7 @@ import requests
 import os
 
 # all issues are stored here
-os.mkdir('issues')
+os.makedirs('issues', exist_ok=True)
 
 
 issue_query_str = 'issues.json?project_id={0}&limit=1&status_id=*'.format(REDMINE_PROJECT_ID)
@@ -71,8 +71,8 @@ def create_dummy_issue(i):
     }}
     '''.format(i, REDMINE_PROJECT_ID, github_default_username)
 
-    print('  Issue {0} not found in project. Creating dummy issue to keep Redmine and GitHub issue IDs synchronized.'.format(i))
     open('issues/{0}.json'.format(str(i).zfill(pad_len)), 'w').write(dummy_issue)
+    print('  Issue #{0} not found in project. Created dummy issue to keep Redmine and GitHub issue IDs synchronized.'.format(i))
 
 
 
@@ -92,8 +92,8 @@ for i in range(1,max_id+1):
 
     if data['issue']['project']['id'] == project_id:
         issue = data['issue']
-        print(issue['id'], issue['subject'])
         open('issues/{0}.json'.format(str(issue['id']).zfill(pad_len)), 'w').write(json.dumps(issue))
+        print('Issue #{0} "{1}" downloaded.'.format(issue['id'], issue['subject']))
     else:
         if REDMINE_CREATE_DUMMY_ISSUE:
             create_dummy_issue(i)
