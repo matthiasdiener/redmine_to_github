@@ -24,6 +24,9 @@ def translate_for_github(content):
     content = content.replace('\r\n</pre>\r\n', '\n```\n') # code block
     content = content.replace('</pre>', '\n```\n') # code block
 
+    if ('filter_redmine_bodytext_for_github' in dir(config)):
+        content = filter_redmine_bodytext_for_github(content)
+    
     return content
 
 

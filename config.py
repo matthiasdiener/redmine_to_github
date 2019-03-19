@@ -44,3 +44,7 @@ github_tokenmap = {
 github_usermap = {
     'redmine_username' :                    'github_username',
 }
+# Filter the body text of Redmine issues and comments before putting them on GitHub
+# (for example, to modify URLs).
+def filter_redmine_bodytext_for_github(content):
+    return content
