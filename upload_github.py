@@ -8,6 +8,7 @@ import sys
 import time
 
 from config import *
+import config
 
 
 def translate_for_github(content):
@@ -270,15 +271,15 @@ def create_issue_from_redmine_file(filename):
 
 files = sys.argv[1:]
 
-print('='*80)
+print('=' * 80)
 print('Uploading {0} issue(s) to GitHub repository "{1}".'.format(len(files), GITHUB_REPO))
-print('='*80)
+print('=' * 80)
 
 
 for f in files:
     create_issue_from_redmine_file(f)
 
-print('='* 80)
+print('=' * 80)
 print('Finished.')
 
 if len(unknown_github_username) > 0:
