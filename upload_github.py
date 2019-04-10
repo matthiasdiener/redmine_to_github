@@ -162,7 +162,7 @@ def make_comment(user, issuenr, body, ctime):
     response = make_request(url, realuser, _type="POST", _data=payload)
 
     if response.status_code != 201:
-        print('Could not create comment: "{0}"'.format(body))
+        print('Could not create comment: body:"{0}", user: {1}, realuser: {2}, issuenr: {3}, payload: {4}'.format(body,user,realuser,issuenr,payload))
         print('Response:', response.content)
         sys.exit(1)
     else:
