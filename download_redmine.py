@@ -35,9 +35,9 @@ data = r.json()
 
 project_id = -1
 
-for i in range(0,len(data['projects'])):
-    if data['projects'][i]['identifier'] == REDMINE_PROJECT_ID:
-        project_id = i
+for p in data['projects']:
+    if p['identifier'] == REDMINE_PROJECT_ID:
+        project_id = p['id']
 
 if project_id == -1:
     print("Error: Project {0} not found on {1}, exiting.".format(REDMINE_PROJECT_ID,REDMINE_SERVER))
