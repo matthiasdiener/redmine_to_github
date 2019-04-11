@@ -18,7 +18,7 @@ REDMINE_PROJECT_ID = 'project_id'
 REDMINE_API_KEY = 'redmine_api_key'
 
 # Create dummy Redmine issues to keep Redmine and GitHub issue numbers synchronized? 
-REDMINE_CREATE_DUMMY_ISSUE=True
+REDMINE_CREATE_DUMMY_ISSUE = True
 
 ##########################################################
 
@@ -46,6 +46,6 @@ github_usermap = {
 }
 
 # Filter the body text of Redmine issues and comments before putting them on GitHub
-# (for example, to modify URLs).
+# (for example, to modify URLs). Needs to return the unmodified or modified content.
 def filter_redmine_bodytext_for_github(content):
     return content

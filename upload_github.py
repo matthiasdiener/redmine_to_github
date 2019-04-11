@@ -79,7 +79,7 @@ def create_milestone(user, title):
     return milestones[title]
 
 
-def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, milestone, closed, labels):
+def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, milestone, closed, labels, orig_issue_num):
     # Create an issue on github.com using the given parameters
 
     realuser = get_github_username(user)
@@ -87,8 +87,10 @@ def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, m
     if body == None:
         body = "No body."
 
+    body = '*Original issue: {0}issues/{1}'.format(REDMINE_SERVER,orig_issue_num) + "*\n\n---\n" + body
+
     if not redmine_user_has_token(user):
-        body = "*Original author: " + user + "*\n\n---\n" + body
+        body = "*Original author: " + user + "*\n" + body
 
     if assignee not in github_tokenmap:
         assignee = github_default_username
@@ -244,7 +246,7 @@ def create_issue_from_redmine_file(filename):
 
 
     # Create issue
-    github_issue_num = make_issue(author, title, body, created_at, closed_at, updated_at, assignee, milestone, closed, labels)
+    github_issue_num = make_issue(author, title, body, created_at, closed_at, updated_at, assignee, milestone, closed, labels, filename_issue_num)
 
     if github_issue_num != filename_issue_num:
         print('  ** Warning: GitHub issue number ({0}) does not match Redmine issue number ({1})! **'.format(github_issue_num, filename_issue_num))

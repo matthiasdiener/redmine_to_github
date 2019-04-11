@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
-
 from config import *
 from urllib.parse import urljoin
 import json
 import requests
 import os
+import sys
 
-# all issues are stored here
+# all issues are stored in issues/
 os.makedirs('issues', exist_ok=True)
 
 
+# Get issue count and max. issue ID
 issue_query_str = 'issues.json?project_id={0}&limit=1&status_id=*'.format(REDMINE_PROJECT_ID)
 
 url = urljoin(REDMINE_SERVER, issue_query_str)
@@ -25,7 +26,22 @@ max_id = data['issues'][0]['id']
 
 pad_len = len(str(max_id))
 
-project_id = data['issues'][0]['project']['id']
+
+# Get Project ID
+url = urljoin(REDMINE_SERVER, 'projects.json')
+
+r = requests.get(url, auth=auth)
+data = r.json()
+
+project_id = -1
+
+for i in range(0,len(data['projects'])):
+    if data['projects'][i]['identifier'] == REDMINE_PROJECT_ID:
+        project_id = i
+
+if project_id == -1:
+    print("Error: Project {0} not found on {1}, exiting.".format(REDMINE_PROJECT_ID,REDMINE_SERVER))
+    sys.exit(1)
 
 
 def create_dummy_issue(i):
