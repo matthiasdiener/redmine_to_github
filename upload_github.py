@@ -243,6 +243,8 @@ def create_issue_from_redmine_file(filename):
         closed_at = None
 
     labels = [indata["tracker"]["name"].lower()]
+    if "category" in indata:
+        labels.append(indata["category"]["name"])
 
 
     # Create issue
