@@ -231,7 +231,7 @@ def create_issue_from_redmine_file(filename):
 
     status = indata["status"]["name"]
 
-    if status in ["Closed", "Invalid", "Merged", "Rejected"]:
+    if status in ["Closed", "Invalid", "Merged", "Rejected", "Resolved"]:
         closed = True
 
         if "closed_on" in indata:
