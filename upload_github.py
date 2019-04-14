@@ -90,7 +90,11 @@ def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, m
     body = '*Original issue: {0}issues/{1}'.format(REDMINE_SERVER,orig_issue_num) + "*\n\n---\n" + body
 
     if not redmine_user_has_token(user):
-        body = "*Original author: " + user + "*\n" + body
+        if redmine_user_has_github_name(user):
+            body = "*Original author: " + user + " (@" + github_usermap[user] + ")*\n" + body
+        else:
+            body = "*Original author: " + user + "*\n" + body
+
 
     if assignee not in github_tokenmap:
         assignee = github_default_username
@@ -136,7 +140,7 @@ def make_issue(user, title, body, created_at, closed_at, updated_at, assignee, m
                 break
 
             if status == "failed":
-                print(response.content)
+                print(payload, realuser, response.content)
                 sys.exit(2)
 
         time.sleep(2)
@@ -152,7 +156,10 @@ def make_comment(user, issuenr, body, ctime):
     realuser = get_github_username(user)
 
     if not redmine_user_has_token(user):
-        body = "*Original author: " + user + "*\n" + body
+        if redmine_user_has_github_name(user):
+            body = "*Original author: " + user + " (@" + github_usermap[user] + ")*\n" + body
+        else:
+            body = "*Original author: " + user + "*\n" + body
 
 
     url = '/issues/{0}/comments'.format(issuenr)
@@ -178,6 +185,11 @@ def redmine_user_has_token(redmine_user):
     if redmine_user in github_usermap:
         github_user = github_usermap[redmine_user]
         if github_user in github_tokenmap:
+            return True
+    return False
+
+def redmine_user_has_github_name(redmine_user):
+    if redmine_user in github_usermap:
             return True
     return False
 
@@ -243,7 +255,7 @@ def create_issue_from_redmine_file(filename):
         closed_at = None
 
     labels = [indata["tracker"]["name"].lower()]
-    if "category" in indata:
+    if "category" in indata and not indata["category"]["name"].lower() in labels:
         labels.append(indata["category"]["name"])
 
 
